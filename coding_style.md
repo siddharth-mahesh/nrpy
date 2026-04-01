@@ -130,42 +130,34 @@ Every non-`__init__.py` file must have a module docstring at the top following t
 <One or more paragraphs describing the module's purpose.>
 
 Author: Zachariah B. Etienne
-        zachetie **at** gmail **dot** com
+        zachetie **at** gmail **dot* com
 """
 ```
 
-For multiple authors, use the plural `Authors:` key with semicolon-separated name/email pairs:
+For multiple authors, use the plural `Authors:` key:
 
 ```python
 """
 <Description.>
 
-Authors: Zachariah B. Etienne; zachetie **at** gmail **dot** com
-         Ken Sible; ksible **at** outlook **dot** com
+Authors: Zachariah B. Etienne
+         zachetie **at** gmail **dot* com
+         Ken Sible
+         ksible **at** outlook **dot* com
 """
 ```
 
 Rules:
 - Use singular `Author:` for exactly one author; plural `Authors:` for two or more.
-- Separate each author's name and email with a semicolon on the same line; continuation lines indent to align under the first author.
-- Email obfuscation uses `**at**` and `**dot**` with **matching double asterisks on both sides**. The pattern `**dot*` (unmatched trailing asterisk) is a widespread copy-paste error in older files — do not reproduce it.
+- In current NRPy Python files, single-author docstrings most often put the email on the next indented line, and multi-author docstrings often list contributors as stacked name/email lines.
+- Author contact information may be included in whatever source-level format is most practical for the file; this style guide does not enforce a specific email layout or obfuscation pattern.
+- Email obfuscation is encouraged when publishing addresses in source code.
 
 **Common anti-patterns to avoid** (all widespread in older files — do not reproduce):
 
-- **`Authors:` without semicolons** — the most pervasive anti-pattern (~88 % of multi-author files). Putting the email on a continuation line with no semicolon is wrong:
-  ```python
-  # BAD — email on next line, no semicolon
-  Authors: Zachariah B. Etienne
-           zachetie **at** gmail **dot** com
-           Ken Sible
-
-  # GOOD — name and email on one line, separated by semicolon
-  Authors: Zachariah B. Etienne; zachetie **at** gmail **dot** com
-           Ken Sible; ksible **at** outlook **dot** com
-  ```
 - **`Author:` (singular) with multiple names** — if there is more than one contributor, the key must be `Authors:` (plural), not `Author:`.
 - **`Email:` or `Contributor:` as alternative metadata keys** — non-standard. Use `Author:` / `Authors:` only.
-- **Author without email** — every listed author should include an obfuscated email on the same line (after the semicolon). Omitting the email is allowed only if the contributor genuinely has no public email to list.
+- **Inconsistent author metadata keys within the same file** — keep the docstring metadata readable and internally consistent, but the exact email formatting is not style-enforced.
 
 ### Type Hints
 
@@ -918,7 +910,7 @@ This indicates the project enforces **very strict** coding standards with a near
 - All code contributions must pass the static analysis checks before being merged.
 - When in doubt, follow the existing patterns in the codebase.
 - This style guide is a living document and may be updated as the project evolves.
-- **Author email format**: The standard obfuscated format is `zachetie **at** gmail **dot** com` (double asterisks, fully matched). A large number of older files contain the copy-paste error `**dot*` (unmatched trailing asterisk) — do not reproduce this. A minority of even older files use the single-asterisk variant (`*at*` / `*dot*`) or plain text. New contributions must use `**at**` / `**dot**` with matching double asterisks.
+- **Author email formatting**: Source files may use any readable email formatting or obfuscation scheme. Obfuscation is encouraged, but this guide does not enforce one exact representation.
 - **Doctest placeholders**: Some registration functions have `Doctests:\n    # FIXME` in their docstrings, indicating tests that need to be written.
 - **`body +=` for conditional C code**: When a C function body has sections that are conditionally included based on Python parameters, build the body string incrementally with `+=`:
   ```python
