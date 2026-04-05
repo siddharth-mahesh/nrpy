@@ -212,7 +212,7 @@ set up initial_p_t and initial_p_r if not set in parfile.
     //   Initialize center_offset to zero before setting z component
     for (int ii = 0; ii < 3; ii++)
       par->center_offset[ii] = 0.0;
-    par->center_offset[0] = -(grid_dist_from_origin_BH_m - grid_dist_from_origin_BH_M) * 0.5;
+    par->center_offset[2] = -(grid_dist_from_origin_BH_m - grid_dist_from_origin_BH_M) * 0.5;
 
     //   Initialize linear momenta to zero before setting initial radial and tangential momenta
     for (int ii = 0; ii < 3; ii++)
