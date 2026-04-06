@@ -466,7 +466,7 @@ The singular `Doctest:` label also appears in a small number of older files; pre
 
 #### `validate_strings` pattern
 
-The standard doctest idiom for verifying generated C code is:
+The standard doctest idiom for verifying generated C code, when the emitted C text is stable enough for exact output comparison, is:
 
 ```python
 Doctests:
@@ -484,12 +484,14 @@ Key points:
 - `validate_strings` compares against a trusted file in `tests/` (auto-generated on first run).
 - Set `file_ext="cu"` when the generated code is CUDA, `"c"` otherwise.
 - Import `validate_strings` (and `clang_format` if needed) inside the doctest, not at module level.
+- **Exception — generated-kernel-dominated C functions**: Do **not** generate or check trusted output files for C functions whose bodies primarily consist of generated kernels, especially large kernels emitted from SymPy expressions. Such output is too sensitive to SymPy version and codegen details for exact string comparison to be a reliable unit-test signal.
+- For these generated-kernel-heavy functions, prefer validation at the symbolic-expression level or with cheaper structural/sanity checks instead of outputting a golden C file under `tests/`.
 
 #### Doctest placeholders
 
 Some functions include `Doctests:` blocks with `# FIXME` placeholders. Treat these as temporary scaffolding:
 - If you add doctests, keep them lightweight (no heavy code generation, no long numeric computations).
-- Prefer doctests that validate generated strings (e.g., via `validate_strings`) or cheap invariants.
+- Prefer doctests that validate generated strings (e.g., via `validate_strings`) or cheap invariants, but skip golden-output doctests for large generated kernels as described above.
 - If you see `# FIXME`, either complete it in a follow-up PR or remove the placeholder when the doctest is ready.
 
 **Doctest prohibition:** Do not write doctests whose primary purpose is to assert that a `CFunction` successfully registers (e.g., checking membership in `cfc.CFunction_dict` or that `register_CFunction_*()` returns without error). Such doctests provide low value and tend to be brittle.
