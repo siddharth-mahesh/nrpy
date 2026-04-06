@@ -8,7 +8,7 @@ Authors: Zachariah Etienne, Kenneth Sible, Steven Brandt
 # Step 1: Load needed modules
 import string
 import sys  # Standard Python module for multiplatform OS-level functions
-from typing import Any, List, Optional, Tuple, Union, cast
+from typing import Any, List, NoReturn, Optional, Tuple, Union, cast
 
 import sympy as sp  # SymPy: The Python computer algebra package upon which NRPy depends
 
@@ -104,20 +104,35 @@ def create_tensor_symbolic(
 
 
 _SYMMETRY_EXAMPLES = {
-    1: "'nosym'", 2: "'nosym' or a single token like 'sym01' or 'anti01'",
-    3: "'nosym' or underscore-separated tokens like 'sym01', 'sym12', 'anti02', or 'sym012'",
-    4: "'nosym' or underscore-separated tokens like 'sym01', 'sym23', 'anti03', 'sym012', or 'sym01_sym23'"}
+    1: "'nosym'",
+    2: "'nosym' or a single token like 'sym01' or 'anti01'",
+    3: (
+        "'nosym' or underscore-separated tokens like 'sym01', 'sym12', "
+        "'anti02', or 'sym012'"
+    ),
+    4: (
+        "'nosym' or underscore-separated tokens like 'sym01', 'sym23', "
+        "'anti03', 'sym012', or 'sym01_sym23'"
+    ),
+}
 
 
 def _parse_symmetry_tokens(rank: int, symmetry: str) -> List[str]:
-    """Validate and split a symmetry string into tokens."""
+    """
+    Validate and split a symmetry string into tokens.
+
+    :param rank: Rank of the indexed expression.
+    :param symmetry: Symmetry specification string.
+    :return: The validated component symmetry tokens.
+    :raises ValueError: If the symmetry string is malformed.
+    """
     if not 1 <= rank <= 4:
         raise ValueError(f"Unsupported rank: {rank}. Rank must be between 1 and 4.")
 
     examples = _SYMMETRY_EXAMPLES[rank]
     index_count = "2 digit indices" if rank == 2 else f"2 to {rank} digit indices"
 
-    def raise_malformed(problem: str, token: Optional[str] = None) -> None:
+    def raise_malformed(problem: str, token: Optional[str] = None) -> NoReturn:
         subject = f"token '{token}'" if token is not None else f"string '{symmetry}'"
         hint = ""
         if token is not None and ("sym" in token[1:] or "anti" in token[1:]):
@@ -154,14 +169,18 @@ def _parse_symmetry_tokens(rank: int, symmetry: str) -> List[str]:
 
         indices = token[prefix_len:]
         if "sym" in indices or "anti" in indices:
-            raise_malformed("multiple symmetry groups must be separated by underscores", token)
+            raise_malformed(
+                "multiple symmetry groups must be separated by underscores", token
+            )
         if len(indices) < 2 or len(indices) > rank or not indices.isdigit():
             raise_malformed(
                 f"tokens must include between 2 and {rank} digit indices after the prefix",
                 token,
             )
         if len(set(indices)) != len(indices) or "".join(sorted(indices)) != indices:
-            raise_malformed("indices must appear exactly once and in ascending order", token)
+            raise_malformed(
+                "indices must appear exactly once and in ascending order", token
+            )
         if any(int(index) >= rank for index in indices):
             raise_malformed(f"indices must lie in the range 0..{rank - 1}", token)
 
@@ -169,7 +188,13 @@ def _parse_symmetry_tokens(rank: int, symmetry: str) -> List[str]:
 
 
 def _expanded_symmetry_tokens(rank: int, symmetry: str) -> List[str]:
-    """Expand validated symmetry tokens into pairwise operations."""
+    """
+    Expand validated symmetry tokens into pairwise operations.
+
+    :param rank: Rank of the indexed expression.
+    :param symmetry: Symmetry specification string.
+    :return: Pairwise symmetry operations derived from the validated tokens.
+    """
     expanded_tokens = []
     for token in _parse_symmetry_tokens(rank, symmetry):
         if token == "nosym":
