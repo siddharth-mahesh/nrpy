@@ -7,7 +7,6 @@ Authors: Zachariah Etienne, Kenneth Sible, Steven Brandt
 
 # Step 1: Load needed modules
 import string
-import sys  # Standard Python module for multiplatform OS-level functions
 from typing import Any, List, NoReturn, Optional, Tuple, Union, cast
 
 import sympy as sp  # SymPy: The Python computer algebra package upon which NRPy depends
@@ -1403,6 +1402,7 @@ def LeviCivitaTensorDDD_dim3_rank3(
 
 if __name__ == "__main__":
     import doctest
+    import sys
 
     results = doctest.testmod()
 

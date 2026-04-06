@@ -6,7 +6,6 @@ Author: Zachariah B. Etienne
         zachetie **at** gmail **dot* com
 """
 
-import sys  # Standard Python module for multiplatform OS-level functions
 from operator import itemgetter
 from typing import Any, Dict, List, Tuple, Union, cast
 
@@ -1101,6 +1100,7 @@ def proto_FD_operators_to_sympy_expressions(
 
 if __name__ == "__main__":
     import doctest
+    import sys
 
     results = doctest.testmod()
 
