@@ -27,6 +27,7 @@ The project uses **Black** for automatic code formatting with the following conf
 - String quotes: Double quotes preferred
 
 Run `black .` before committing to ensure consistent formatting.
+For any modified Python file, also run `.github/single_file_static_analysis.sh <path-to-file.py>` before committing.
 
 ### Naming Conventions
 
@@ -878,6 +879,12 @@ static inline void diag_write_header(FILE *file_ptr, const char *coord_names, co
 
 The `.github/single_file_static_analysis.sh` script enforces the following checks:
 
+Run this script on every modified Python file before committing. This is the required pre-commit check for Python changes:
+
+```bash
+./.github/single_file_static_analysis.sh path/to/modified_file.py
+```
+
 | Tool | Purpose | Configuration |
 |------|---------|---------------|
 | **black** | Code formatting | `--check` mode |
@@ -911,6 +918,7 @@ This indicates the project enforces **very strict** coding standards with a near
 ## Additional Notes
 
 - All code contributions must pass the static analysis checks before being merged.
+- For Python changes, run `.github/single_file_static_analysis.sh` on each modified Python file, not just on a hand-picked subset.
 - When in doubt, follow the existing patterns in the codebase.
 - This style guide is a living document and may be updated as the project evolves.
 - **Author email formatting**: Source files may use any readable email formatting or obfuscation scheme. Obfuscation is encouraged, but this guide does not enforce one exact representation.
