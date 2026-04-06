@@ -150,6 +150,7 @@ Authors: Zachariah B. Etienne
 Rules:
 - Use singular `Author:` for exactly one author; plural `Authors:` for two or more.
 - In current NRPy Python files, single-author docstrings most often put the email on the next indented line, and multi-author docstrings often list contributors as stacked name/email lines.
+- The names shown in the examples above are illustrative, not prescriptive. Do not add Zachariah B. Etienne (or any other person) to a file's `Author:`/`Authors:` metadata unless that person is already an author of the file or is being intentionally credited for that file's content.
 - Author contact information may be included in whatever source-level format is most practical for the file; this style guide does not enforce a specific email layout or obfuscation pattern.
 - Email obfuscation is encouraged when publishing addresses in source code.
 
