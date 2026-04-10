@@ -34,8 +34,6 @@ For any modified Python file, also run `.github/single_file_static_analysis.sh <
 | Element | Convention | Examples |
 |---------|------------|----------|
 | Classes | PascalCase | `CCodeGen`, `NRPyParameter`, `CodeParameter`, `ReferenceMetric`, `BSSNRHSs` |
-| Functions/Methods | snake_case | `setup_FD_matrix__return_inverse_lowlevel()`, `register_CFunction_diagnostics()` |
-| Variables | snake_case | `cparam_type`, `glb_params_dict`, `enable_simd` |
 | Constants | UPPER_SNAKE_CASE or leading underscore | `_UNSET_DEFAULT`, `_VALID_NRPY_PARAM_TYPES` |
 | Private helpers | Leading underscore | `_format_c_offset_str()`, `_flatten_and_unique_str()`, `_parse_array_spec()` |
 
