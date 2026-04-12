@@ -546,7 +546,7 @@ jobs:
       - name: Checkout trusted commit code
         uses: actions/checkout@v4
         with:
-          ref: '6fd5472a2f5f5fdf372231ca22a11b64daf08b17'
+          ref:  ref/pull/188/head #old trsuted hash '6fd5472a2f5f5fdf372231ca22a11b64daf08b17'
           path: trusted_code
 
       - name: Build trusted sebob executable
