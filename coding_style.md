@@ -162,10 +162,11 @@ Rules:
 ### Type Hints
 
 - **Extensive use** of type hints throughout the codebase.
-- Uses the `typing` module: `Any`, `Dict`, `List`, `Optional`, `Tuple`, `Union`, `cast`.
+- Uses the `typing` module: `Dict`, `List`, `Optional`, `Tuple`, `Union`, `cast`.
 - Uses `typing_extensions.Literal` for constrained string values.
 - Return type annotations are always present, including `-> None`.
 - `# type: ignore` comments are used selectively for third-party imports lacking stubs (e.g., `from mpmath import mpf  # type: ignore`).
+- **Do not use `Any` in type hints** when a more specific type can be written. Prefer precise unions, protocols, `object`, or small helper aliases. Treat `Any` as last resort for unavoidable third-party typing gaps, and document the reason inline when it must appear.
 - **Do not use Python 3.9+ builtin generics** (`list[X]`, `dict[X, Y]`, `tuple[X, ...]`) or the `X | None` union shorthand. Always use `List[X]`, `Dict[X, Y]`, `Optional[X]`, `Union[X, Y]` from `typing` — zero occurrences of the newer syntax exist in the codebase.
 - **`from __future__ import annotations`** is used in ~14 files (mostly the `BHaH/rotation` submodule). It is not the codebase-wide standard; do not add it to files that do not already use it unless there is a specific reason (e.g., forward references in the same file).
 

@@ -12,7 +12,7 @@ Author: Ken Sible
 """
 
 from collections import OrderedDict
-from typing import Any, Dict, List, Set, Tuple, Union, cast
+from typing import Dict, List, Set, Tuple, Union, cast
 
 import sympy as sp  # SymPy: The Python computer algebra package upon which NRPy depends
 
@@ -580,7 +580,7 @@ def sort_cse_output_deterministically(
     >>> [lhs for lhs, _ in sort_cse_output_deterministically(comm_b, "t_")[0]]
     [t_tmp0, t_tmp1]
     """
-    SortKey = Tuple[Any, ...]
+    SortKey = Tuple[object, ...]
 
     def _stable_float_key(value: sp.Float) -> SortKey:
         """
