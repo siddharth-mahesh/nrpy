@@ -21,10 +21,8 @@ This document provides a comprehensive style guide for the NRPy project, a numer
 
 ### Formatting
 
-The project uses **Black** for automatic code formatting with the following configuration:
-- Line length: 88 characters
-- Indentation: 4 spaces
-- String quotes: Double quotes preferred
+The project uses **Black** for automatic code formatting. Follow Black's output
+for line wrapping and other formatting details.
 
 Run `black .` before committing to ensure consistent formatting.
 For any modified Python file, also run `.github/single_file_static_analysis.sh <path-to-file.py>` before committing.
@@ -903,7 +901,7 @@ This indicates the project enforces **very strict** coding standards with a near
 | Aspect | Python | C |
 |--------|--------|---|
 | Indentation | 4 spaces | 2 spaces |
-| Line length | 88 characters (black) | ~100 characters |
+| Line length | Determined by Black formatting | ~100 characters |
 | Naming | snake_case for functions, PascalCase for classes | snake_case for functions/variables, UPPER_CASE for macros |
 | Docstrings | Sphinx/reStructuredText-style with `:param:` / `:return:` | Doxygen-style with `@param` |
 | Type hints | Extensive | N/A (C language) |
