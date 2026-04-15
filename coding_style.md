@@ -27,6 +27,10 @@ for line wrapping and other formatting details.
 Run `black .` before committing to ensure consistent formatting.
 For any modified Python file, also run `.github/single_file_static_analysis.sh <path-to-file.py>` before committing.
 
+Binary files are not allowed in NRPy pull requests. Do not add images, archives,
+compiled artifacts, or other non-text assets. If a change appears to require one,
+redesign it as text or discuss an exception with maintainers first.
+
 ### Naming Conventions
 
 | Element | Convention | Examples |
