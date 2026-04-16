@@ -430,7 +430,7 @@ Style rules:
 
 ### Prohibited Dependencies
 
-- **`import re` — USE SPARINGLY**: Regex is used only when genuine pattern matching is required (e.g., detecting coordinate-system variants by name, transforming loop-body strings). It is not acceptable for simple string manipulation that `.replace()` can handle. Five core files (`reference_metric.py`, `rfm_wrapper_functions.py`, `CarpetX/general_relativity/rhs_eval.py`, `BHaH/general_relativity/constraints_eval.py`, `ETLegacy/general_relativity/rhs_eval.py`) use `re` for legitimate reasons; follow their pattern and add a comment explaining why `.replace()` is insufficient.
+- **`import re` — FORBIDDEN WHEN `.replace()` SUFFICES**: Regex may be used only when genuine pattern matching is required (e.g., detecting coordinate-system variants by name or matching variable text layouts that cannot be handled robustly with direct string replacement). It is forbidden for simple string manipulation that `.replace()` can handle. If `.replace()` or another plain-string method is sufficient, do not `import re`. Five core files (`reference_metric.py`, `rfm_wrapper_functions.py`, `CarpetX/general_relativity/rhs_eval.py`, `BHaH/general_relativity/constraints_eval.py`, `ETLegacy/general_relativity/rhs_eval.py`) use `re` for legitimate reasons; follow their pattern and add a comment explaining why `.replace()` is insufficient.
 
 - **`numpy` — NEVER DEPEND ON NUMPY**: NRPy codes cannot ever depend on numpy. The workflow is: symbolic expression → C code. All computation is done symbolically with SymPy, then code-generated to C.
 
