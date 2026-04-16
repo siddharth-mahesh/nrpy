@@ -837,20 +837,9 @@ static inline void diag_write_time_comment(FILE *file_ptr, const REAL time) {
 
 ### 6. Comment Style
 
-- **Doxygen-style** `/** ... */` for function documentation.
-- `//` for inline comments.
-- Use `@param`, `@return`, `@brief`, `@details`, `@note`, `@code` tags.
+- **Doxygen-style** `/** ... */` for all function documentation — see [Section 11](#11-function-documentation-doxygen) for the full standard.
+- `//` for inline comments; never `/* */` for inline or block comments in function bodies.
 - Section headers with `// ========================` patterns.
-
-```c
-/**
- * @file diagnostics_volume_integration_helpers.h
- * @brief Provides a recipe-based interface to compute domain integrals...
- *
- * @section usage Usage
- * ...
- */
-```
 
 ### 7. Macro Conventions
 
@@ -907,6 +896,49 @@ Every closing brace that ends a non-trivial block must carry a `// END ...` comm
 `do...while` loops end with `} while (condition);` — append the comment after the semicolon: `} while (condition); // END DO-WHILE: brief description`.
 
 Omit end comments only when the block body is fewer than 5 lines and the opening brace is visible without scrolling.
+
+### 11. Function Documentation (Doxygen)
+
+Every C function whose body exceeds ~10 lines requires a Doxygen comment immediately above it. Shorter functions may omit it if the name and signature are self-documenting.
+
+If a function is both declared (in a header) and defined (in a `.c` file), the comment goes on the declaration; otherwise it goes on the definition.
+
+**Structure rules:**
+
+- `/**` on its own line; ` */` closing on its own line.
+- The first line after `/**` is the brief description — do not use a `@brief` tag.
+- Always include a blank ` *` line after the brief, and after any extended description, before the first `@param` tag. Structure: brief → blank → [optional extended description → blank] → `@param`/`@return` block.
+- Extended description is optional. For simple functions, one short paragraph suffices. For complex functions, use a numbered step-by-step description of what the function does — this is strongly preferred over dense prose. Do not add extended descriptions to functions near the 10-line threshold unless the logic is genuinely non-obvious.
+- Tag order: `@param` block, then `@return`, then a blank ` *` line, then `@note`/`@warning`/`@pre`. Never embed `@warning` inline inside a `@param` description — always make it a standalone tag.
+- Keep `@param` descriptions to one line.
+- No dash after the parameter name: `@param name Description`, not `@param name - Description`.
+- `const` pointer parameters are always `@param[in]`. Non-`const` pointer parameters use `@param[out]` or `@param[in,out]` based on actual usage. Pass-by-value parameters use plain `@param`.
+- Omit `@return` entirely for `void` functions.
+- For functions returning integer error codes, enumerate the outcomes: e.g. `@return 0 on success, -1 on allocation failure`, or reference the specific enum values.
+- Use `@note` for important usage constraints, `@warning` for correctness hazards, `@pre` for preconditions.
+
+**`desc=` strings in `register_CFunction()` calls** follow the same tag conventions — no dash, no `@brief`, correct directional qualifiers, no `@return` for void. The `/**`/` */` delimiters are emitted by the framework and must not appear in the `desc=` string itself.
+
+```c
+/**
+ * Brief one-line description ending with a period.
+ *
+ * Optional extended description. For complex functions, prefer numbered steps:
+ * 1. Validates inputs and allocates working memory.
+ * 2. Performs the main computation.
+ * 3. Writes results to output pointers and frees temporaries.
+ *
+ * @param[in]  commondata Pointer to global simulation parameters.
+ * @param[in]  h          Horizon index (0-based).
+ * @param[out] result     On return, holds the computed value.
+ * @param[in,out] state   Updated in place with current iteration state.
+ * @return 0 on success, -1 if convergence fails.
+ *
+ * @note Uses OpenMP; must not be called from inside a parallel region.
+ * @warning h must be a valid horizon index; no bounds check is performed.
+ * @pre result and state are non-null.
+ */
+```
 
 ---
 
