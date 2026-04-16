@@ -752,8 +752,7 @@ Grid functions follow a strict naming convention encoding tensor type and indice
 ### C Code Comment Patterns
 
 - Block comments with `//` style, not `/* */`
-- End-of-loop comments: `} // END LOOP over theta`
-- End-of-block comments: `} // END IF: condition description`
+- End-of-block comments follow the standard in [Section 10](#10-end-curly-brace-comments)
 - Function documentation in `desc=` parameter of `register_CFunction()`
 
 ### Struct Field Organization
@@ -882,6 +881,32 @@ static inline void diag_write_header(FILE *file_ptr, const char *coord_names, co
 - `const` used extensively for immutable parameters.
 - `restrict` pointer qualifier for performance.
 - Grouped declarations with aligned comments.
+
+### 10. End-Curly-Brace Comments
+
+Every closing brace that ends a non-trivial block must carry a `// END ...` comment in new code. Rules:
+
+- Keyword is ALL-CAPS after `// ` (with one space).
+- A colon follows the keyword (except `OMP PARALLEL` and `OMP PARALLEL FOR`, which mirror the pragma syntax).
+- For loops: name the loop variable, then describe its range or purpose (e.g., `for h over all horizons`).
+- For all other blocks: briefly describe the condition or purpose.
+- No trailing period. No parentheses after function names. Bare function name only.
+
+| Block type | Format | Example |
+|------------|--------|---------|
+| Function | `} // END FUNCTION: name` | `} // END FUNCTION: compute_spin` |
+| `for` loop | `} // END LOOP: for <var> over <range/purpose>` | `} // END LOOP: for h over all horizons` |
+| `while` loop | `} // END WHILE: brief description` | `} // END WHILE: refining spin until convergence` |
+| `if` block | `} // END IF: brief condition` | `} // END IF: fill_r_min_ghosts flag check` |
+| `else if` block | `} // END ELSE IF: brief condition` | `} // END ELSE IF: num_resolutions_multigrid > 0` |
+| `else` block | `} // END ELSE: brief description` | `} // END ELSE: not enable_BBH_mode` |
+| OpenMP parallel | `} // END OMP PARALLEL` | `} // END OMP PARALLEL` |
+| OpenMP parallel for | `} // END OMP PARALLEL FOR` | `} // END OMP PARALLEL FOR` |
+| Anonymous scoping block | `} // END BLOCK: description` | `} // END BLOCK: gettimeofday() sanity check` |
+
+`do...while` loops end with `} while (condition);` — append the comment after the semicolon: `} while (condition); // END DO-WHILE: brief description`.
+
+Omit end comments only when the block body is fewer than 5 lines and the opening brace is visible without scrolling.
 
 ---
 
