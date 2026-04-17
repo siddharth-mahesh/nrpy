@@ -32,13 +32,13 @@ After an editable install, you can run generators from the repository root with 
 
 `python -m pip install nrpy` installs the Python package, but many generated projects also need external tools:
 
-- Standalone BHaH examples: a C compiler and `make`
+- Standalone BHaH examples: a C compiler and `make`; some also link against GSL
 - Waveform and geodesic examples: a C compiler, `make`, and GSL
-- Einstein Toolkit / Carpet / CarpetX examples: an existing Einstein Toolkit environment
-- `superB` examples: a Charm++ toolchain
+- Einstein Toolkit / Carpet / CarpetX generators: the Python package install is enough to generate thorns; an existing Einstein Toolkit environment is needed to build and run the generated thorns
+- `superB` examples: a Charm++ toolchain; some also link against GSL
 - JAX example generation: Python tooling for the generated project, plus JAX in that generated environment as needed
 
-If you are new to NRPy, start with one of the standalone BHaH examples below. Those examples are the closest path to the current public single-patch BH@H workflow.
+If you are new to NRPy, start with one of the standalone BHaH examples below that does not require GSL. Those examples are the closest path to the current public single-patch BH@H workflow.
 
 ## First Successful Run
 
@@ -105,7 +105,7 @@ Once the first standalone workflow works, these are reasonable next steps:
 - Single-patch BH@H NR example: `python -m nrpy.examples.two_blackholes_collide`
 - Lightweight elliptic initial-data workflow: `python -m nrpy.examples.nrpyelliptic_conformally_flat`
 - Waveform generation, requires GSL: `python -m nrpy.examples.seobnrv5_aligned_spin_inspiral -seobnrv5_bob`
-- Einstein Toolkit / CarpetX generation, requires an ET environment: `python -m nrpy.examples.carpetx_wavetoy_thorns`
+- Einstein Toolkit / CarpetX thorn generation; building the generated thorns requires an ET environment: `python -m nrpy.examples.carpetx_wavetoy_thorns`
 
 ## Project Families and Example Generators
 
@@ -114,7 +114,7 @@ Once the first standalone workflow works, these are reasonable next steps:
 BHaH is NRPy's standalone application infrastructure. In this public repository, it provides the core capabilities for single-patch numerical relativity evolutions in Cartesian, curvilinear, and singular coordinate systems, and these generators typically produce buildable C or CUDA-ready projects under `project/<name>/`.
 
 - Wave equation solvers: `python -m nrpy.examples.wave_equation_cartesian`, `python -m nrpy.examples.wave_equation_curvilinear`, `python -m nrpy.examples.wave_equation_multicoordinates`
-- Black hole evolution and diagnostics: `python -m nrpy.examples.two_blackholes_collide`, `python -m nrpy.examples.blackhole_spectroscopy`, `python -m nrpy.examples.spinning_blackhole`
+- Black hole evolution and diagnostics: `python -m nrpy.examples.two_blackholes_collide`, `python -m nrpy.examples.blackhole_spectroscopy` (requires GSL), `python -m nrpy.examples.spinning_blackhole`
 - Elliptic / initial-data workflows: `python -m nrpy.examples.nrpyelliptic_conformally_flat`
 
 ### Einstein Toolkit and CarpetX Generators
@@ -123,6 +123,8 @@ These generators target the Einstein Toolkit rather than producing standalone ex
 
 - ETLegacy / Carpet workflows: `python -m nrpy.examples.carpet_wavetoy_thorns`, `python -m nrpy.examples.carpet_baikal_thorns`
 - CarpetX workflows: `python -m nrpy.examples.carpetx_wavetoy_thorns`, `python -m nrpy.examples.carpetx_baikal_thorns`
+
+These generators write thorn directories under `project/<name>/`. You only need an Einstein Toolkit checkout when you want to compile or run those generated thorns.
 
 ### superB / Charm++ Generators
 
@@ -136,7 +138,7 @@ These generators target `superB`, NRPy's Charm++-based infrastructure for distri
 These generators focus on compact-binary dynamics, inspiral, and waveform modeling.
 
 - SEOBNRv5 / BOB waveform projects: `python -m nrpy.examples.seobnrv5_aligned_spin_inspiral -seobnrv5_bob`, `python -m nrpy.examples.seobnrv5_aligned_spin_inspiral -seobnrv5_nrpy`
-- SEBOBv2 standalone project: `python -m nrpy.examples.sebobv2`
+- SEBOBv2 standalone project, requires GSL: `python -m nrpy.examples.sebobv2`
 - JAX project generation: `python -m nrpy.examples.sebobv1_jax`
 - Post-Newtonian utility: `python -m nrpy.examples.nrpypn_quasicircular_momenta`
 
@@ -144,7 +146,7 @@ These generators focus on compact-binary dynamics, inspiral, and waveform modeli
 
 These generators cover additional relativistic physics applications beyond the main PDE and thorn-generation workflows.
 
-- Neutron-star and matter-related workflows: `python -m nrpy.examples.tovola_neutron_star`, `python -m nrpy.examples.hydro_without_hydro`
+- Neutron-star and matter-related workflows: `python -m nrpy.examples.tovola_neutron_star` (requires GSL), `python -m nrpy.examples.hydro_without_hydro` (requires GSL)
 - Geodesic integration: `python -m nrpy.examples.mass_geodesic_integrator`, `python -m nrpy.examples.photon_geodesic_integrator`
 
 ### Specialized Utilities
@@ -155,8 +157,9 @@ These generators cover additional relativistic physics applications beyond the m
 
 - Standalone BHaH examples usually generate a project directory with C source, headers, a Makefile, a parameter file, and a runnable executable target for single-patch Cartesian or curvilinear-coordinate workflows.
 - Waveform and geodesic generators also produce standalone projects, but they typically require GSL at build time.
-- Einstein Toolkit and CarpetX generators produce thorn directories that you copy or link into an Einstein Toolkit checkout.
-- `superB` generators produce Charm++ projects rather than plain standalone executables.
+- Some additional standalone physics examples, including `blackhole_spectroscopy`, `hydro_without_hydro`, `tovola_neutron_star`, and `sebobv2`, also require GSL at build time.
+- Einstein Toolkit and CarpetX generators produce thorn directories that you copy or link into an Einstein Toolkit checkout; an ET environment is needed for the subsequent build/run step, not for thorn generation itself.
+- `superB` generators produce Charm++ projects rather than plain standalone executables, and some of them also require GSL.
 - `sebobv1_jax` generates a Python/JAX project instead of a C executable.
 
 Most generators print project-specific next steps when they finish, but the exact instructions vary by example.
