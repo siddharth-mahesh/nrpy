@@ -2,7 +2,7 @@
 
 # NRPy
 
-NRPy is a Python/SymPy-based symbolic code generation toolkit for numerical relativity and relativistic astrophysics. It uses symbolic equation modules to generate standalone C/CUDA applications, Einstein Toolkit thorns, Charm++ projects, and JAX/Python workflows.
+NRPy is a Python/SymPy-based symbolic code generation toolkit for numerical relativity and relativistic astrophysics. It uses symbolic equation modules to generate standalone C/CUDA applications, Einstein Toolkit thorns, Charm++ projects, and JAX/Python workflows. In its current public form, NRPy provides the core infrastructure for single-patch BlackHoles@Home (BH@H) numerical relativity simulations in Cartesian, curvilinear, and singular coordinate systems.
 
 At a high level:
 
@@ -38,7 +38,7 @@ After an editable install, you can run generators from the repository root with 
 - `superB` examples: a Charm++ toolchain
 - JAX example generation: Python tooling for the generated project, plus JAX in that generated environment as needed
 
-If you are new to NRPy, start with one of the standalone BHaH examples below.
+If you are new to NRPy, start with one of the standalone BHaH examples below. Those examples are the closest path to the current public single-patch BH@H workflow.
 
 ## First Successful Run
 
@@ -75,20 +75,43 @@ Expect generated diagnostics and data products in the project directory. The exa
 - `make` succeeds
 - the executable runs without further manual project editing
 
+For this example, one simple command-line override is `convergence_factor`. For example:
+
+```bash
+./wave_equation_cartesian 2.0
+```
+
+This reruns the example at higher resolution and writes output files such as `out0d-conv_factor2.00.txt`.
+
+## Lightweight Single-Patch BH@H Example
+
+If you want the closest public example of the single-patch BH@H numerical relativity workflow, use:
+
+```bash
+python -m nrpy.examples.two_blackholes_collide
+```
+
+This example:
+
+- evolves Brill-Lindquist binary black hole initial data
+- uses a single-patch curvilinear spherical-coordinate setup
+- serves as a compact public example of the single-patch BH@H workflow
+- is intentionally lightweight: it is cheap enough to run in seconds even on very modest hardware
+
 ## Good Next Examples
 
 Once the first standalone workflow works, these are reasonable next steps:
 
-- Another standalone BHaH example: `python -m nrpy.examples.two_blackholes_collide`
-- Elliptic initial data: `python -m nrpy.examples.nrpyelliptic_conformally_flat`
-- Waveform generation with GSL installed: `python -m nrpy.examples.seobnrv5_aligned_spin_inspiral -seobnrv5_bob`
-- Einstein Toolkit / CarpetX generation if you already have ET set up: `python -m nrpy.examples.carpetx_wavetoy_thorns`
+- Single-patch BH@H NR example: `python -m nrpy.examples.two_blackholes_collide`
+- Lightweight elliptic initial-data workflow: `python -m nrpy.examples.nrpyelliptic_conformally_flat`
+- Waveform generation, requires GSL: `python -m nrpy.examples.seobnrv5_aligned_spin_inspiral -seobnrv5_bob`
+- Einstein Toolkit / CarpetX generation, requires an ET environment: `python -m nrpy.examples.carpetx_wavetoy_thorns`
 
 ## Project Families and Example Generators
 
 ### Standalone BHaH Generators
 
-BHaH is NRPy's standalone application infrastructure. These generators typically produce buildable C or CUDA-ready projects under `project/<name>/`.
+BHaH is NRPy's standalone application infrastructure. In this public repository, it provides the core capabilities for single-patch numerical relativity evolutions in Cartesian, curvilinear, and singular coordinate systems, and these generators typically produce buildable C or CUDA-ready projects under `project/<name>/`.
 
 - Wave equation solvers: `python -m nrpy.examples.wave_equation_cartesian`, `python -m nrpy.examples.wave_equation_curvilinear`, `python -m nrpy.examples.wave_equation_multicoordinates`
 - Black hole evolution and diagnostics: `python -m nrpy.examples.two_blackholes_collide`, `python -m nrpy.examples.blackhole_spectroscopy`, `python -m nrpy.examples.spinning_blackhole`
@@ -103,7 +126,7 @@ These generators target the Einstein Toolkit rather than producing standalone ex
 
 ### superB / Charm++ Generators
 
-These generators target `superB`, NRPy's Charm++-based infrastructure for distributed-memory workflows.
+These generators target `superB`, NRPy's Charm++-based infrastructure for distributed-memory workflows and a scalable extension of single-patch BH@H-generated code.
 
 - GR evolution and spectroscopy: `python -m nrpy.examples.superB_two_blackholes_collide`, `python -m nrpy.examples.superB_blackhole_spectroscopy`
 - Elliptic initial data: `python -m nrpy.examples.superB_nrpyelliptic_conformally_flat`
@@ -130,7 +153,7 @@ These generators cover additional relativistic physics applications beyond the m
 
 ## What Gets Generated?
 
-- Standalone BHaH examples usually generate a project directory with C source, headers, a Makefile, a parameter file, and a runnable executable target.
+- Standalone BHaH examples usually generate a project directory with C source, headers, a Makefile, a parameter file, and a runnable executable target for single-patch Cartesian or curvilinear-coordinate workflows.
 - Waveform and geodesic generators also produce standalone projects, but they typically require GSL at build time.
 - Einstein Toolkit and CarpetX generators produce thorn directories that you copy or link into an Einstein Toolkit checkout.
 - `superB` generators produce Charm++ projects rather than plain standalone executables.
