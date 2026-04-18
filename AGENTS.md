@@ -168,6 +168,8 @@ For runnable modules under `infrastructures/*/*.py`, this block is strongly enco
 
 For other runnable modules, this block is recommended when it is useful.
 
+Outside `nrpy/infrastructures/*/*.py`, doctests that invoke Python-based C/C++ code generation are discouraged, though not forbidden. Prefer symbolic validation, expression-level checks, or other cheaper invariants unless the doctest adds clear signal that those alternatives cannot provide.
+
 When present, use this exact block:
 
 ```python
@@ -352,6 +354,10 @@ Rules:
 - Import `validate_strings` / `clang_format` inside doctest
 - Clear `cfc.CFunction_dict` first
 - Use `file_ext="c"` usually, `"cu"` for CUDA
+- Python-based C/C++-generation doctests are most appropriate in `nrpy/infrastructures/*/*.py`
+- Outside `nrpy/infrastructures/*/*.py`, discourage such doctests unless they verify meaningful behavior that cheaper checks would miss
+- Do not generate or check trusted output files for C functions whose bodies are dominated by large generated kernels; prefer symbolic validation or small structural/sanity checks there
+- Absolutely forbid trivial doctests that seem to exist only to check a box
 - Do not write doctests whose main value is “registration succeeded”
 - Keep doctests lightweight
 - Prefer symbolic validation or small structural checks for giant generated kernels
