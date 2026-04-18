@@ -50,7 +50,7 @@ par.set_parval_from_str("parallelization", parallelization)
 par.set_parval_from_str("fp_type", fp_type)
 
 # Code-generation-time parameters:
-project_name = "exact_kasner_evolution"
+project_name = "kasner_exact_evolution"
 CoordSystem = "GeneralRFM_fisheyeN1"
 IDtype = "Kasner"
 IDCoordSystem = "Cartesian"
@@ -168,11 +168,11 @@ BHaH.diagnostics.diagnostics.register_all_diagnostics(
     enable_free_auxevol=False,
     enable_psi4_diagnostics=False,
 )
-BHaH.Kasner.diagnostics.register_CFunction_diagnostic_gfs_set(
+BHaH.general_relativity.Kasner.diagnostics.register_CFunction_diagnostic_gfs_set(
     enable_interp_diagnostics=False,
     enable_psi4=False,
 )
-BHaH.Kasner.diagnostics.register_CFunction_diagnostics_nearest()
+BHaH.general_relativity.Kasner.diagnostics.register_CFunction_diagnostics_nearest()
 BHaH.general_relativity.diagnostics_volume_integration.register_CFunction_diagnostics_volume_integration()
 if enable_rfm_precompute:
     BHaH.rfm_precompute.register_CFunctions_rfm_precompute(

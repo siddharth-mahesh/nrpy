@@ -574,6 +574,21 @@ For readability, embedded C inside raw strings should use 2-space indentation wh
 - **`#include` directives** inside C bodies use `#include "set_CodeParameters.h"` when `include_CodeParameters_h=True`.
 - **String replacement** is used to adapt generated C code: `.replace("auxevol_gfs[IDX4(", "commondata->interp_src_gfs[IDX4(SRC_")`.
 
+#### BHaH symbolic codegen rules
+
+For new BHaH infrastructure generators that emit ordinary per-grid or per-point kernels, prefer infrastructure helpers over handwritten emitted C:
+
+- Prefer `BHaH.simple_loop.simple_loop()` over handwritten `LOOP_OMP(...)` or raw nested `for` loops when generating standard grid loops.
+- When symbolic expressions depend on registered gridfunctions, prefer `ccg.c_codegen(..., automatically_read_gf_data_from_memory=True)` and provide the expected array aliases (for example `in_gfs`) instead of hand-writing repetitive `const REAL ... = y_n_gfs[...]` loads.
+- Keep transformations symbolic until `c_codegen` whenever practical. Do not use string-based replacement of symbolic expressions or generated C when the same result can be expressed symbolically.
+- For this class of infrastructure code, do not introduce new `#include "set_CodeParameters.h"` lines inside generated function bodies. Instead, derive needed `params` and `commondata` locals from the symbolic expressions using `get_params_commondata_symbols_from_expr_list()` and `generate_definition_header()`.
+- Avoid routine post-registration mutation of `cfc.CFunction_dict[...]` bodies as a customization mechanism. Prefer explicit extension hooks or function parameters in the shared registration helper that owns the emitted C.
+- Keep the registration function linear. For one-off symbolic setup used only by a single `register_CFunction_*()` routine, do not factor the work into private helper functions that force readers to scroll up and down to reconstruct the flow.
+- Construct symbolic expressions immediately before they are consumed by `c_codegen()` or `simple_loop()`. Do not build `expr_list`, `lhs_list`, tensor declarations, or supporting symbolic state far earlier in the function than the code-generation call that uses them.
+- Register gridfunctions, parity tables, and other registration-time metadata in the same local part of the function where they are actually needed. Do not front-load unrelated setup before `desc`, `name`, `params`, or other basic C-function metadata when that setup is specific to a later code-generation block.
+- When assembling emitted C bodies, prefer a top-to-bottom `body += ...` construction that follows the generated C execution order. Avoid proliferating temporary string fragments or helper functions whose primary purpose is to manufacture pieces of C text.
+- Add short comments at jarring transitions in registration functions so readers understand why the flow changes abruptly. In particular, annotate jumps such as “register DIAG gridfunctions before building parity tables” or “construct the symbolic kernel immediately before `c_codegen()`” instead of leaving those shifts implicit.
+
 **Raw-string indentation note**: Embedded C inside raw strings may appear with minor indentation variance across modules due to historical edits. The requirement is that the C is valid and consistently readable; do not mechanically re-indent unless you are fixing a functional or formatting issue.
 
 ```python
@@ -590,7 +605,7 @@ body = rf"""
 The Python registration function must closely imitate the C function it registers. Follow these guidelines:
 
 - Use separate lines for declaring `desc`, `cfunc_type`, `name`, `params`, `body`, etc. variables before passing them to `register_CFunction()`
-- Avoid helper functions when possible - the registration function should be self-contained
+- Registration functions should be self-contained and read in execution order. Do not introduce tiny helper wrappers or one-off private setup helpers unless they encapsulate genuinely reusable logic shared across multiple registration functions.
 
 Example pattern:
 ```python
