@@ -204,7 +204,7 @@ def register_CFunction_diagnostic_gfs_set(
     # Build the Kasner symbolic kernel immediately before emitting it so the registration flow
     # reads in the same order as the generated C function body.
     CoordSystem = par.parval_from_str("CoordSystem_to_register_CodeParameters")
-    BSSN_quantities[CoordSystem]
+    _ = BSSN_quantities[CoordSystem]
     if "KASNER_t0" not in par.glb_code_params_dict:
         par.register_CodeParameters(
             "REAL",
