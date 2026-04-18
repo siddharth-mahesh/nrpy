@@ -155,14 +155,9 @@ Authors: Zachariah B. Etienne
 ```
 
 Rules:
-- An optional filename comment may appear immediately before the module docstring in non-`__init__.py` files only.
-- If present, it must have the exact form `# <relative path from nrpy root>.py`, e.g. `# nrpy/examples/mass_geodesic_integrator.py`.
-- `__init__.py` files are excluded from this exception and must remain comment-free.
 - Use singular `Author:` for exactly one author; plural `Authors:` for two or more.
-- In current NRPy Python files, single-author docstrings most often put the email on the next indented line, and multi-author docstrings often list contributors as stacked name/email lines.
-- The names shown in the examples above are illustrative, not prescriptive. Do not add Zachariah B. Etienne (or any other person) to a file's `Author:`/`Authors:` metadata unless that person is already an author of the file or is being intentionally credited for that file's content.
-- Author contact information may be included in whatever source-level format is most practical for the file; this style guide does not enforce a specific email layout or obfuscation pattern.
-- Email obfuscation is encouraged when publishing addresses in source code.
+- The names in the examples above are illustrative. Do not add any person to `Author:`/`Authors:` unless they are already an author of that file.
+- Email obfuscation is encouraged; the exact format is not enforced.
 
 **Common anti-patterns to avoid** (all widespread in older files — do not reproduce):
 
@@ -178,7 +173,7 @@ Rules:
 - Return type annotations are always present, including `-> None`.
 - `# type: ignore` comments are used selectively for third-party imports lacking stubs (e.g., `from mpmath import mpf  # type: ignore`).
 - **Do not use `Any` in type hints** when a more specific type can be written. Prefer precise unions, protocols, `object`, or small helper aliases. Treat `Any` as last resort for unavoidable third-party typing gaps, and document the reason inline when it must appear.
-- **Do not use Python 3.9+ builtin generics** (`list[X]`, `dict[X, Y]`, `tuple[X, ...]`) or the `X | None` union shorthand. Always use `List[X]`, `Dict[X, Y]`, `Optional[X]`, `Union[X, Y]` from `typing` — zero occurrences of the newer syntax exist in the codebase.
+- **Do not use Python 3.9+ builtin generics** (`list[X]`, `dict[X, Y]`, `tuple[X, ...]`) or the `X | None` union shorthand. Always use `List[X]`, `Dict[X, Y]`, `Optional[X]`, `Union[X, Y]` from `typing`. A small number of files (primarily in `infrastructures/BHaH/general_relativity/basis_transforms/` and `examples/`) use the newer syntax; do not introduce it in new files.
 - **`from __future__ import annotations`** is used in ~14 files (mostly the `BHaH/rotation` submodule). It is not the codebase-wide standard; do not add it to files that do not already use it unless there is a specific reason (e.g., forward references in the same file).
 
 ```python
@@ -191,9 +186,6 @@ def process_data(
 
 ### Comment Style
 
-- Inline comments are used sparingly, primarily for complex algorithmic explanations.
-- Block comments with `#` prefix are used for section headers.
-- Comments should be clear and concise.
 - **`Note:` inside docstrings** — inline `Note:` prose is acceptable for clarifying subtle behavior directly inside a docstring paragraph. A small number of files (primarily in `equations/`) use the reST `.. note::` directive block instead; either form is acceptable, but do not mix both within the same docstring.
 
 ```python
@@ -215,7 +207,7 @@ def process_data(
 # Step 2: Compute Christoffel symbols.
 ```
 
-The uppercase variant `# STEP N:` appears in a small number of older files and is **non-standard** — use lowercase `# Step N:` in all new code.
+The uppercase variant `# STEP N:` is **non-standard** and appears in the `examples/` directory (e.g., `wave_equation_cartesian.py`, `spinning_blackhole.py`) as well as some older infrastructure files. Use lowercase `# Step N:` in all new code; do not propagate `# STEP N:` to new files.
 
 ### `if __name__ == "__main__":` Block
 
@@ -265,6 +257,7 @@ This section documents the patterns used when building symbolic equations in the
   - Face-value substitution in GRHD fluxes
   - Systematic `nrpyABS` → `sp.Abs` conversion
   - Surface radius substitution in horizon modules
+  - Evaluating a symbolic expression at a specific parameter value (e.g., `.subs(t, t_attach)` in waveform attachment-point calculations)
 
 - **Preferred SymPy patterns**:
   - Use `sp.sympify(0)` / `sp.sympify(1)` for accumulator initialization
@@ -349,14 +342,6 @@ ve.compare_or_generate_trusted_results(
 )
 ```
 
-**How validation works internally**:
-
-1. **CSE optimization**: Each SymPy expression is passed through SymPy's `cse()` (common subexpression elimination) to speed up numerical evaluation.
-2. **Symbol substitution**: Free symbols are mapped to deterministic `mpf` values using MD5-hashed seeds (`fixed_mpfs_for_free_symbols=True` ensures reproducibility). Special constants like `PI` and `M_SQRT1_2` are set to their correct mathematical values.
-3. **High-precision evaluation**: Expressions are evaluated at 30-digit precision using `mpmath`. If a result is suspiciously close to zero, precision is doubled to 60 digits to confirm whether it should be exactly zero.
-4. **Trusted file comparison**: The computed `mpf`/`mpc` values are compared against a `trusted_dict` stored in a sibling `tests/` directory. Relative error tolerance is `10^(-4/5 * precision)` (~24 significant digits).
-5. **Auto-generation**: If no trusted file exists, one is automatically generated and formatted with Black.
-
 **Trusted file format**: Test data files in `tests/` directories follow the **Trusted Vector File Contract** described below:
 
 ```python
@@ -385,26 +370,7 @@ trusted_dict = {
 
 ### Equation Module Output Contract
 
-Equation modules must expose the symbolic outputs that will be validated and code-generated via a predictable structure. The typical pattern is:
-
-1. During symbolic construction, assign key output expressions to `self.<expr_name>`.
-2. Build a results dictionary from the instance namespace (commonly `bq.__dict__` or an explicit dict) and pass it through `nrpy.validate_expressions.validate_expressions`.
-
-A common usage looks like:
-
-```python
-import nrpy.validate_expressions.validate_expressions as ve
-
-results_dict = ve.process_dictionary_of_expressions(
-    bq.__dict__, fixed_mpfs_for_free_symbols=True
-)
-ve.compare_or_generate_trusted_results(
-    os.path.abspath(__file__),
-    os.getcwd(),
-    f"{os.path.splitext(os.path.basename(__file__))[0]}_{CoordSystem}",
-    results_dict,
-)
-```
+Equation modules assign key outputs to `self.<expr_name>`, then validate via the same `process_dictionary_of_expressions` / `compare_or_generate_trusted_results` pattern shown above (using `bq.__dict__` or an explicit dict).
 
 Naming expectations:
 - Expression names in the results dictionary must match the `trusted_dict` keys used by the corresponding `tests/<module>*.py` file.
@@ -438,7 +404,7 @@ Style rules:
 
 ## Infrastructure Code Patterns
 
-Based on analysis of the BHaHAHA infrastructure module, the following patterns are standard for NRPy infrastructure code:
+The following patterns are standard for NRPy infrastructure code:
 
 ### Module Organization
 
@@ -474,7 +440,7 @@ def register_CFunction_foo(...) -> ...:
     """
 ```
 
-The singular `Doctest:` label also appears in a small number of older files; prefer the plural `Doctests:` in new code.
+Two non-standard variants also appear in the codebase: the singular `Doctest:` (older files) and the mixed-case `DocTests:` (core files including `c_function.py` and `params.py`). Use `Doctests:` (lowercase `t`, plural) in all new code.
 
 #### `validate_strings` pattern
 
@@ -631,20 +597,12 @@ def register_CFunction_my_function() -> None:
 
 ### Function Inlining Guidelines
 
-**Inline all C and Python functions that do not save lines of code by existing separately.** The worst offenders are functions that:
-- Are used only once
-- Are only a few lines long
-- When considering Doxygen-style docstrings (C) or proper docstrings (Python), would need to have several lines and/or be called many times for separation to make sense
-
-**Rule of thumb**: A function should only be separated if it:
-- Is called from multiple locations, OR
-- Is complex enough (>10-15 lines of actual logic) that separation improves readability
+**Inline all C and Python functions that do not save lines of code by existing separately.** Separate a function only if it is called from multiple locations or has >10-15 lines of actual logic.
 
 **Anti-patterns to avoid**:
-- Single-use helper functions that are only 2-5 lines
-- Functions where the docstring is longer than the function body
-- Functions that simply return a single expression or trivial computation
-- Helper functions that only exist to give a name to a small code fragment
+- Single-use functions that are only 2-5 lines
+- Functions whose docstring is longer than the body
+- Functions that simply return a single expression
 
 **Example of what NOT to do** (Python):
 ```python
@@ -977,7 +935,6 @@ Run this script on every modified Python file before committing. This is the req
 | **darglint** | Docstring argument checking | `-v 2` (verbose) |
 | **doctests** | Embedded tests | `python3 <file>` |
 
-This indicates the project enforces **very strict** coding standards with a near-perfect pylint score requirement.
 
 ---
 
@@ -1001,10 +958,6 @@ This indicates the project enforces **very strict** coding standards with a near
 
 - All code contributions must pass the static analysis checks before being merged.
 - For Python changes, run `.github/single_file_static_analysis.sh` on each modified Python file, not just on a hand-picked subset.
-- When in doubt, follow the existing patterns in the codebase.
-- This style guide is a living document and may be updated as the project evolves.
-- **Author email formatting**: Source files may use any readable email formatting or obfuscation scheme. Obfuscation is encouraged, but this guide does not enforce one exact representation.
-- **Doctest placeholders**: Some registration functions have `Doctests:\n    # FIXME` in their docstrings, indicating tests that need to be written.
 - **`body +=` for conditional C code**: When a C function body has sections that are conditionally included based on Python parameters, build the body string incrementally with `+=`:
   ```python
   body = ""
