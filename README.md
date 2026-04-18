@@ -199,4 +199,4 @@ For broader validation, see `.github/workflows/main.yml`, which exercises static
 
 ## Legacy Note
 
-Older notebook-centered NRPy material lives in the separate [`nrpytutorial`](https://github.com/nrpy/nrpytutorial) repository. This repository focuses on the current package and generator-based workflow.
+Older notebook-centered NRPy+ (NRPy 1.0) material lives in the separate [`nrpytutorial`](https://github.com/zachetienne/nrpytutorial) repository. This repository focuses on the current package and generator-based workflow.
