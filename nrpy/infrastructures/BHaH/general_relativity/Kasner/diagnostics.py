@@ -319,29 +319,33 @@ def register_CFunction_diagnostic_gfs_set(
     param_symbols, commondata_symbols = get_params_commondata_symbols_from_expr_list(
         expr_list, exclude=["xx0", "xx1", "xx2", "cf", "trK", "KASNER_t_phys"]
     )
-    body += f"""
-    const REAL *restrict xx[3] = {{griddata[grid].xx[0], griddata[grid].xx[1], griddata[grid].xx[2]}};
-    const REAL *restrict in_gfs = y_n_gfs;
-    const REAL KASNER_t_phys = commondata->KASNER_t0 + commondata->time;
-{lp.simple_loop(
-        loop_body=f"""{generate_definition_header(
+    params_definitions = generate_definition_header(
         param_symbols,
         var_access=parallel_utils.get_params_access("openmp"),
-    )}
-{generate_definition_header(
+    )
+    commondata_definitions = generate_definition_header(
         commondata_symbols,
         var_access=parallel_utils.get_commondata_access("openmp"),
-    )}
+    )
+    loop_body = f"""{params_definitions}
+{commondata_definitions}
 {ccg.c_codegen(
         expr_list,
         lhs_list,
         automatically_read_gf_data_from_memory=True,
         include_braces=False,
         verbose=False,
-    )}""",
+    )}"""
+    body += f"""
+    const REAL *restrict xx[3] = {{griddata[grid].xx[0], griddata[grid].xx[1], griddata[grid].xx[2]}};
+    const REAL *restrict in_gfs = y_n_gfs;
+    const REAL KASNER_t_phys = commondata->KASNER_t0 + commondata->time;
+{lp.simple_loop(
+        loop_body=loop_body,
         loop_region="all points",
         read_xxs=True,
-    )}
+    )
+}
     LOOP_OMP("omp parallel for", i0, 0, Nxx_plus_2NGHOSTS0, i1, 0, Nxx_plus_2NGHOSTS1, i2, 0, Nxx_plus_2NGHOSTS2) {{
       const int idx3 = IDX3(i0, i1, i2);
       diagnostic_gfs[grid][IDX4pt(DIAG_LAPSEGF, idx3)] = y_n_gfs[IDX4pt(ALPHAGF, idx3)];
