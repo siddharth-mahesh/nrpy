@@ -162,7 +162,13 @@ Procedural comment style:
 
 ### `if __name__ == "__main__":`
 
-Every runnable non-test, non-`__init__.py` file end with:
+For runnable non-test, non-`__init__.py` modules under `nrpy/equations/` and all subdirectories, the file ends with:
+
+For runnable modules under `infrastructures/*/*.py`, this block is strongly encouraged.
+
+For other runnable modules, this block is recommended when it is useful.
+
+When present, use this exact block:
 
 ```python
 if __name__ == "__main__":
@@ -633,7 +639,8 @@ Python:
 - Sphinx docstrings
 - old-style `typing` annotations
 - no docstrings in `__init__.py`
-- doctest runner block at end of runnable files
+- doctest runner block required at end of runnable files in `nrpy/equations/**`
+- doctest runner block strongly encouraged in `infrastructures/*/*.py` and recommended elsewhere
 - trusted-value files in `*/tests/*.py` store reference values only; no module docstrings, no single-file static analysis
 
 C:

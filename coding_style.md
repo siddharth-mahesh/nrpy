@@ -211,7 +211,13 @@ The uppercase variant `# STEP N:` is **non-standard** and appears in the `exampl
 
 ### `if __name__ == "__main__":` Block
 
-Every runnable non-test, non-`__init__.py` file ends with this exact block to run its embedded doctests:
+For runnable non-test, non-`__init__.py` modules under `nrpy/equations/` and all subdirectories, the file ends with this exact block to run its embedded doctests.
+
+For runnable modules under `infrastructures/*/*.py`, this block is strongly encouraged.
+
+For other runnable modules, this block is recommended when it is useful.
+
+When present, use this exact block:
 
 ```python
 if __name__ == "__main__":
@@ -417,7 +423,8 @@ The following patterns are standard for NRPy infrastructure code:
   # Imports
   # Main registration function: register_CFunction_<name>()
   # Optional helper functions (Python-side symbolic computation)
-  # if __name__ == "__main__": doctest block
+  # Optional if __name__ == "__main__": doctest block
+  # Required for modules under nrpy/equations/ and subdirectories
   ```
 
 ### Doctest Conventions
