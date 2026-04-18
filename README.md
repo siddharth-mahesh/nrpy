@@ -9,6 +9,10 @@ At a high level:
 - `nrpy/examples` contains runnable project generators.
 - `nrpy/equations`, `nrpy/infrastructures`, and `nrpy/helpers` contain the symbolic physics, backend-specific code generation, and shared support code that those generators use.
 
+## Citation
+
+NRPy is the product of many scientists' work. [Please cite the relevant NRPy papers in your publications](CITATION.md); these citations go a long way toward proper acknowledgement of these efforts and support many junior scientists' careers.
+
 ## Installation
 
 For end users who want to generate projects from the published package:
