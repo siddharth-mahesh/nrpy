@@ -260,6 +260,8 @@ This section documents the patterns used when building symbolic equations in the
 
 - **`sp.simplify()` — MINIMAL USE**: Avoid calling `sp.simplify()` in equation-building code. It is only acceptable in test/validation code or explicit identity checks. Some modules explicitly document "No SymPy .subs() or simplify() calls" as an enforcement rule.
 
+- **`cached_simplify()` — NARROW EXCEPTION FOR LOCAL SUBEXPRESSIONS**: `nrpy.helpers.cached_functions.cached_simplify()` may be used sparingly in equation-building code when a localized simplification materially improves downstream symbolic tractability, code generation stability, or expression readability, especially in `nrpy/equations/general_relativity/`. Prefer applying it to small scalar subexpressions, not whole tensors or large assembled RHS expressions. Do not treat this as blanket permission to simplify aggressively; if plain symbolic construction is practical, prefer that. When the need is not obvious from nearby code, add a short comment explaining why the cached simplification is warranted.
+
 - **`sp.subs()`, `sp.replace()` — NEVER USE for pattern-based expression transformation**: These methods are forbidden in core equation-building. The only acceptable uses of `.subs()` are:
   - Coordinate substitution in elliptic source terms
   - Face-value substitution in GRHD fluxes
