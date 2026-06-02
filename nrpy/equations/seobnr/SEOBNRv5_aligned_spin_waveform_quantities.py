@@ -128,6 +128,10 @@ class SEOBNRv5_aligned_spin_waveform_quantities:
         self.khat = sp.zeros(9)
         for m in range(9):
             self.khat[m] = m * self.Omega * self.Hreal
+
+        self.deltalm["(8 , 8)"] = sp.sympify(0)
+        self.deltalm["(7 , 7)"] = sp.Rational(43, 70) * self.vh3        
+        self.deltalm["(6 , 6)"] = sp.Rational(43, 70) * self.vh3
         self.deltalm["(5 , 5)"] = (
             (sp.Rational(96875, 131250) + sp.Rational(857528, 131250) * self.nu)
             * (self.vh3)
@@ -1377,7 +1381,7 @@ class SEOBNRv5_aligned_spin_waveform_quantities:
         :return: dictionary containing the symbolic expressions representing each mode of the strain
         """
         hlms = {}
-        modes = [(2, 2), (2, 1), (3, 3), (3, 2), (4, 4), (4, 3), (5, 5)]
+        modes = [(2, 2), (2, 1), (3, 3), (3, 2), (4, 4), (4, 3), (5, 5), (6, 6), (7, 7), (8, 8)]
         # l, m = 2, 2
         for l, m in modes:
             if not (l + m) % 2:
